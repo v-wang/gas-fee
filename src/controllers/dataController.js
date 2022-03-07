@@ -6,29 +6,47 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const TargetFee = require('../models/TargetFee');
 
 const url = 'https://ethgasstation.info/api/ethgasAPI.json?api-key=';
 
+const targetCalc = async () => {};
+const minuteCalc = async () => {};
+const hourCalc = async () => {};
+
 const fetchFee = () => {
-  setInterval(() => {
-    axios
-      .get(`${url}${process.env.ETH_GAS_STATION_KEY}`)
-      .then((data) => {
-        console.log(data.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, 4000);
+  axios
+    .get(`${url}${process.env.ETH_GAS_STATION_KEY}`)
+    .then((data) => {
+      return data.data;
+    })
+    .then((data) => {
+      TargetFee.create(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
-const saveFee = async (fee) => {};
+const calcMinuteAvg = () => {
+  TargetFee.find({}).then((data) => {
+    console.log(data);
+  });
+};
+
+calcMinuteAvg();
 
 const calcHourAvg = async (fees) => {};
 
 const saveHourAvg = async (avg) => {};
 
-// fetchFee();
+// setInterval(() => {
+//   fetchFee();
+// }, 4000);
+
+// setInterval(() => {
+//   calcMinuteAvg();
+// }, 60000);
 
 router.get('/ping', (req, res) => {
   res.json({ status: 'ok' });
